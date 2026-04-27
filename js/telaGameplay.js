@@ -2,7 +2,7 @@ let indiceProximaFrase = 0;
 let fraseAtiva = null;
 let particulas = [];
 let pontuacao = 0;
-let cronogramaLetras = []; 
+let cronogramaLetras = [];
 let ondasDeSom = [];
 
 function iniciarGameplay() {
@@ -12,34 +12,35 @@ function iniciarGameplay() {
   pontuacao = 0;
   indiceProximaFrase = 0;
 
-  cronogramaLetras = dadosMusicas.musicas[dificuldadeSelecionada].cronogramaLetra;
+  cronogramaLetras =
+    dadosMusicas.musicas[dificuldadeSelecionada].cronogramaLetra;
 }
 
 function telaGameplay() {
   desenharMoldura();
 
   let musicaAtual = dadosMusicas.musicas[dificuldadeSelecionada];
-  let capaAtual   = imagensCapas[dificuldadeSelecionada];
-  let musicaObj   = musicas[dificuldadeSelecionada];
+  let capaAtual = imagensCapas[dificuldadeSelecionada];
+  let musicaObj = musicas[dificuldadeSelecionada];
 
   if (musicaObj.isPlaying()) {
     desenharVisualizador();
   }
 
   if (capaAtual) {
-      let tamanhoCapa = 160; 
+    let tamanhoCapa = 160;
 
-      if (musicaObj.isPlaying()) {
-        fft.analyze(); 
-        let grave = fft.getEnergy("bass"); 
+    if (musicaObj.isPlaying()) {
+      fft.analyze();
+      let grave = fft.getEnergy("bass");
 
-        tamanhoCapa = map(grave, 0, 255, 160, 200);
-      }
-
-      imageMode(CENTER);
-      image(capaAtual, width / 2, height / 2 - 160, tamanhoCapa, tamanhoCapa);
-      filter(POSTERIZE, 4);
+      tamanhoCapa = map(grave, 0, 255, 160, 200);
     }
+
+    imageMode(CENTER);
+    image(capaAtual, width / 2, height / 2 - 160, tamanhoCapa, tamanhoCapa);
+    filter(POSTERIZE, 4);
+  }
 
   noStroke();
   textAlign(LEFT, TOP);
@@ -60,11 +61,10 @@ function gerenciarKaraoke(musicaObj) {
   if (!musicaObj.isPlaying()) return;
   if (indiceProximaFrase >= cronogramaLetras.length) return;
 
-  let proxima    = cronogramaLetras[indiceProximaFrase];
+  let proxima = cronogramaLetras[indiceProximaFrase];
   let tempoAtual = musicaObj.currentTime();
 
   if (tempoAtual >= proxima.tempo && tempoAtual < proxima.tempo + 1.5) {
-
     if (fraseAtiva !== null && fraseAtiva.digitado !== fraseAtiva.texto) {
       pontuacao -= 50;
       criarExplosao(width / 2, height / 2, [255, 50, 50]);
@@ -76,10 +76,10 @@ function gerenciarKaraoke(musicaObj) {
     }
 
     fraseAtiva = {
-      texto:       proxima.texto,
-      digitado:    "",
+      texto: proxima.texto,
+      digitado: "",
       tempoInicio: proxima.tempo,
-      tempoFim:    tempoLimite
+      tempoFim: tempoLimite,
     };
 
     indiceProximaFrase++;
@@ -90,16 +90,19 @@ function desenharFraseKaraoke(musicaObj) {
   if (fraseAtiva === null) return;
 
   let tempoAtual = musicaObj.currentTime();
-  let posicaoY   = height / 2 + 20;
+  let posicaoY = height / 2 + 20;
 
   let pulso = 0;
   if (musicaObj.isPlaying()) {
     let grave = fft.getEnergy("bass");
 
-    pulso = map(grave, 0, 255, 0, 8); 
+    pulso = map(grave, 0, 255, 0, 8);
   }
 
-  if (tempoAtual > fraseAtiva.tempoFim && fraseAtiva.digitado !== fraseAtiva.texto) {
+  if (
+    tempoAtual > fraseAtiva.tempoFim &&
+    fraseAtiva.digitado !== fraseAtiva.texto
+  ) {
     pontuacao -= 50;
     criarExplosao(width / 2, height / 2, [255, 50, 50]);
     fraseAtiva = null;
@@ -109,7 +112,7 @@ function desenharFraseKaraoke(musicaObj) {
   if (fraseAtiva.digitado === fraseAtiva.texto) {
     textAlign(CENTER, CENTER);
     noStroke();
-    textSize(14 + pulso); 
+    textSize(14 + pulso);
     fill(100, 255, 100);
     text("CONTINUE ASSIM!", width / 2, posicaoY);
   } else {
@@ -126,7 +129,7 @@ function desenharFraseKaraoke(musicaObj) {
     textSize(tamanhoBase + pulso);
 
     let larguraTotal = textWidth(fraseAtiva.texto);
-    let inicioX      = (width / 2) - (larguraTotal / 2);
+    let inicioX = width / 2 - larguraTotal / 2;
 
     textAlign(LEFT, CENTER);
     fill(255, 200, 0);
@@ -137,15 +140,15 @@ function desenharFraseKaraoke(musicaObj) {
     text(
       fraseAtiva.texto.substring(fraseAtiva.digitado.length),
       inicioX + larguraDigitada,
-      posicaoY
+      posicaoY,
     );
 
-    let duracaoTotal        = fraseAtiva.tempoFim - fraseAtiva.tempoInicio;
-    let tempoPassado        = tempoAtual - fraseAtiva.tempoInicio;
-    let porcentagemRestante = constrain(1 - (tempoPassado / duracaoTotal), 0, 1);
+    let duracaoTotal = fraseAtiva.tempoFim - fraseAtiva.tempoInicio;
+    let tempoPassado = tempoAtual - fraseAtiva.tempoInicio;
+    let porcentagemRestante = constrain(1 - tempoPassado / duracaoTotal, 0, 1);
 
     let larguraBarra = min(400, width - 120);
-    let barraX = (width / 2) - (larguraBarra / 2);
+    let barraX = width / 2 - larguraBarra / 2;
     let barraY = posicaoY + 50;
 
     noStroke();
@@ -153,9 +156,9 @@ function desenharFraseKaraoke(musicaObj) {
     rectMode(CORNER);
     rect(barraX, barraY, larguraBarra, 8, 4);
 
-    if      (porcentagemRestante > 0.5)  fill(0, 255, 0);
+    if (porcentagemRestante > 0.5) fill(0, 255, 0);
     else if (porcentagemRestante > 0.25) fill(255, 200, 0);
-    else                                 fill(255, 50, 50);
+    else fill(255, 50, 50);
 
     rect(barraX, barraY, larguraBarra * porcentagemRestante, 8, 4);
     rectMode(CENTER);
@@ -169,7 +172,7 @@ function desenharFraseKaraoke(musicaObj) {
     text(
       "PROXIMA: " + cronogramaLetras[indiceProximaFrase].texto,
       width / 2,
-      height / 2 + 100
+      height / 2 + 100,
     );
   }
 }
@@ -182,16 +185,18 @@ function gameplayKeyPressed() {
   }
 
   if ((keyCode >= 65 && keyCode <= 90) || keyCode === 32) {
-    let caractere = (keyCode === 32) ? " " : key.toUpperCase();
+    let caractere = keyCode === 32 ? " " : key.toUpperCase();
 
     if (fraseAtiva !== null && fraseAtiva.digitado !== fraseAtiva.texto) {
-      let proximoCaractere = fraseAtiva.texto.charAt(fraseAtiva.digitado.length);
+      let proximoCaractere = fraseAtiva.texto.charAt(
+        fraseAtiva.digitado.length,
+      );
 
       if (caractere === proximoCaractere) {
         fraseAtiva.digitado += caractere;
         criarExplosaoPequena(
           random(width / 2 - 100, width / 2 + 100),
-          height / 2 + random(-20, 20)
+          height / 2 + random(-20, 20),
         );
 
         if (fraseAtiva.digitado === fraseAtiva.texto) {
@@ -204,38 +209,48 @@ function gameplayKeyPressed() {
 }
 
 function verificarFimDeJogo(musicaObj) {
-  let jogoAcabou = false;
-
+  // 1. Condição de Vitória: Música acabou e pontuação está acima do limite
   if (indiceProximaFrase >= cronogramaLetras.length && !musicaObj.isPlaying()) {
-    jogoAcabou = true;
-  }
-
-  if (pontuacao < -500) {
-    musicaObj.stop();
-    jogoAcabou = true;
-  }
-
-  if (jogoAcabou) {
     let nivelStr = niveis[dificuldadeSelecionada];
 
     if (verificaSeEhRecorde(pontuacao, nivelStr)) {
-      nomeJogadorInput = ""; 
-      mudarEstado("NOME_RANKING"); 
+      nomeJogadorInput = "";
+      mudarEstado("NOME_RANKING");
     } else {
-      mudarEstado("INICIO"); 
+      mudarEstado("SUCESSO"); // <-- Nova tela de sucesso
     }
+  }
+
+  // 2. Condição de Derrota: Pontuação caiu muito
+  if (pontuacao < -500) {
+    musicaObj.stop();
+    mudarEstado("GAME_OVER"); // <-- Nova tela de Game Over
   }
 }
 
 function criarExplosao(ex, ey, cor) {
   for (let i = 0; i < 30; i++) {
-    particulas.push({ x: ex, y: ey, vx: random(-5, 5), vy: random(-5, 5), vida: 255, cor: cor });
+    particulas.push({
+      x: ex,
+      y: ey,
+      vx: random(-5, 5),
+      vy: random(-5, 5),
+      vida: 255,
+      cor: cor,
+    });
   }
 }
 
 function criarExplosaoPequena(ex, ey) {
   for (let i = 0; i < 5; i++) {
-    particulas.push({ x: ex, y: ey, vx: random(-2, 2), vy: random(-2, 2), vida: 255, cor: [255, 200, 0] });
+    particulas.push({
+      x: ex,
+      y: ey,
+      vx: random(-2, 2),
+      vy: random(-2, 2),
+      vida: 255,
+      cor: [255, 200, 0],
+    });
   }
 }
 
@@ -272,8 +287,8 @@ function desenharVisualizador() {
     let y = map(wave[i], -1, 1, -40, 40);
 
     let distEsq = x - margem;
-    let distDir = (width - margem) - x;
-    let areaFade = 1000; 
+    let distDir = width - margem - x;
+    let areaFade = 1000;
 
     if (distEsq < areaFade) {
       y *= map(distEsq, 0, areaFade, 0, 1);

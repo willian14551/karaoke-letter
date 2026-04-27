@@ -16,9 +16,9 @@ let progressoCarregamento = 0;
 let totalAssets = 0;
 let assetsCarregados = 0;
 
-let rankings = { "FACIL": [], "MEDIO": [], "DIFICIL": [] };
-let nomeJogadorInput = ""; 
-let abaRankingSelecionada = 0; 
+let rankings = { FACIL: [], MEDIO: [], DIFICIL: [] };
+let nomeJogadorInput = "";
+let abaRankingSelecionada = 0;
 
 async function preload() {
   fontePixel = await loadFont("assets/fonts/PressStart2P-Regular.ttf");
@@ -30,15 +30,21 @@ async function preload() {
     for (let i = 0; i < dados.musicas.length; i++) {
       imagensCapas[i] = await loadImage(
         `assets/img/albuns/${dados.musicas[i].capa}`,
-        () => { assetsCarregados++; progressoCarregamento = assetsCarregados / totalAssets; }
+        () => {
+          assetsCarregados++;
+          progressoCarregamento = assetsCarregados / totalAssets;
+        },
       );
       musicas[i] = loadSound(
         `assets/audio/bgm/${dados.musicas[i].musica}`,
-        () => { assetsCarregados++; progressoCarregamento = assetsCarregados / totalAssets; }
+        () => {
+          assetsCarregados++;
+          progressoCarregamento = assetsCarregados / totalAssets;
+        },
       );
     }
 
-    await new Promise(r => setTimeout(r, 600));
+    await new Promise((r) => setTimeout(r, 600));
     carregando = false;
     estado = "INICIO";
   });
@@ -48,11 +54,11 @@ function setup() {
   createCanvas(windowWidth, windowHeight);
   textAlign(CENTER, CENTER);
   rectMode(CENTER);
-  textFont(fontePixel);  
-  criarMenu();           
-  criarBackground();     
+  textFont(fontePixel);
+  criarMenu();
+  criarBackground();
   carregarRankings();
-  fft = new p5.FFT(0.8); 
+  fft = new p5.FFT(0.8);
 }
 
 function draw() {
@@ -92,9 +98,14 @@ function draw() {
     case "NOME_RANKING":
       telaInserirNome();
       break;
+    case "GAME_OVER":
+      telaGameOver();
+      break;
+    case "SUCESSO":
+      telaSucesso();
+      break;
   }
 }
-
 function desenharTelaLoading() {
   noStroke();
   fill(255);
@@ -108,7 +119,7 @@ function desenharTelaLoading() {
   text("CARREGANDO...", width / 2, height / 2 - 30);
 
   let larguraBarra = 300;
-  let barraX = (width / 2) - (larguraBarra / 2);
+  let barraX = width / 2 - larguraBarra / 2;
   let barraY = height / 2 + 10;
 
   stroke(60);
@@ -119,9 +130,10 @@ function desenharTelaLoading() {
 
   noStroke();
   fill(0, 200, 255);
-  let progresso = totalAssets > 0
-    ? progressoCarregamento
-    : (sin(frameCount * 0.04) * 0.5 + 0.5);
+  let progresso =
+    totalAssets > 0
+      ? progressoCarregamento
+      : sin(frameCount * 0.04) * 0.5 + 0.5;
   rect(barraX, barraY, larguraBarra * constrain(progresso, 0, 1), 14, 4);
 
   fill(100);
@@ -130,7 +142,7 @@ function desenharTelaLoading() {
   text(pontos, width / 2, height / 2 + 45);
 
   rectMode(CENTER);
-  textFont(fontePixel); 
+  textFont(fontePixel);
 }
 
 function tocarSomUI() {
@@ -141,20 +153,24 @@ function tocarSomUI() {
 }
 
 function mudarEstado(novoEstado) {
-
   if (estado === "GAMEPLAY" && novoEstado === "INICIO") {
-    musicas.forEach(m => { if (m && m.isPlaying()) m.stop(); });
+    musicas.forEach((m) => {
+      if (m && m.isPlaying()) m.stop();
+    });
   }
 
-  if (novoEstado === "GAMEPLAY" || (estado === "GAMEPLAY" && novoEstado === "INICIO")) {
+  if (
+    novoEstado === "GAMEPLAY" ||
+    (estado === "GAMEPLAY" && novoEstado === "INICIO")
+  ) {
     estado = "TRANSICAO";
     selecionado = 0;
 
     setTimeout(() => {
       efetivarMudanca(novoEstado);
-    }, 3000); 
+    }, 3000);
 
-    return; 
+    return;
   }
 
   efetivarMudanca(novoEstado);
@@ -170,17 +186,51 @@ function efetivarMudanca(novoEstado) {
   }
 
   if (novoEstado === "INICIO") {
-    musicas.forEach(m => { if (m && m.isPlaying()) m.stop(); });
+    musicas.forEach((m) => {
+      if (m && m.isPlaying()) m.stop();
+    });
   }
 }
 
 function criarMenu() {
   botoes = [];
 
-  botoes.push(new Botao(width / 2, 390, 200, 50, "JOGAR",    color(0, 150, 255), color(0, 255, 255)));
-  botoes.push(new Botao(width / 2, 460, 200, 50, "RANKING",  color(200, 150, 0), color(255, 200, 0)));
-  botoes.push(new Botao(width / 2, 530, 200, 50, "SOBRE",    color(180),         color(255)));
-  botoes.push(new Botao(width / 2, 600, 200, 50, "CRÉDITOS", color(180, 0, 0),   color(255, 0, 0)));
+  botoes.push(
+    new Botao(
+      width / 2,
+      300,
+      200,
+      50,
+      "JOGAR",
+      color(0, 150, 255),
+      color(0, 255, 255),
+    ),
+  ); // Subiu de 390 para 300
+  botoes.push(
+    new Botao(
+      width / 2,
+      370,
+      200,
+      50,
+      "RANKING",
+      color(200, 150, 0),
+      color(255, 200, 0),
+    ),
+  ); // Subiu de 460 para 370
+  botoes.push(
+    new Botao(width / 2, 440, 200, 50, "SOBRE", color(180), color(255)),
+  ); // Subiu de 530 para 440
+  botoes.push(
+    new Botao(
+      width / 2,
+      510,
+      200,
+      50,
+      "CRÉDITOS",
+      color(180, 0, 0),
+      color(255, 0, 0),
+    ),
+  ); // Subiu de 600 para 510
 }
 
 function desenharMoldura() {
@@ -219,7 +269,6 @@ function keyPressed() {
       tocarSomUI();
       mudarEstado(botoes[selecionado].texto);
     }
-
   } else if (estado === "JOGAR") {
     if (keyCode === UP_ARROW) {
       dificuldadeSelecionada = (dificuldadeSelecionada - 1 + 3) % 3;
@@ -234,26 +283,24 @@ function keyPressed() {
       tocarSomUI();
       mudarEstado("INICIO");
     }
-
   } else if (estado === "GAMEPLAY") {
     gameplayKeyPressed();
     return false;
-
   } else if (estado === "RANKING") {
     rankingKeyPressed();
     return false;
-
   } else if (estado === "NOME_RANKING") {
     inserirNomeKeyPressed();
     return false;
-
+  } else if (estado === "GAME_OVER" || estado === "SUCESSO") {
+    fimDeJogoKeyPressed();
+    return false;
   } else {
     if (keyCode === ESCAPE) {
       tocarSomUI();
       mudarEstado("INICIO");
     }
   }
-
 }
 
 function windowResized() {
@@ -291,7 +338,7 @@ class Botao {
     this.escala = lerp(this.escala, alvo, 0.1);
 
     let larguraAtual = this.w * this.escala;
-    let alturaAtual  = this.h * this.escala;
+    let alturaAtual = this.h * this.escala;
 
     strokeWeight(4);
     noFill();
@@ -352,8 +399,8 @@ function salvarRankings() {
 }
 
 function verificaSeEhRecorde(pontos, nivelStr) {
-  if (pontos <= 0) return false; 
+  if (pontos <= 0) return false;
   let r = rankings[nivelStr];
-  if (r.length < 5) return true; 
-  return pontos > r[r.length - 1].pontos; 
+  if (r.length < 5) return true;
+  return pontos > r[r.length - 1].pontos;
 }
