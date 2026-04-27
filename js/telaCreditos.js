@@ -7,7 +7,7 @@ function telaCreditos() {
   text("CREDITOS", width / 2, 150);
 
   textSize(12);
-  text("github.com/sergiocalazans/karaoke-letter", width / 2, 200);
+  text("github.com/willian14551/karaoke-letter", width / 2, 200);
 
   textSize(18);
   text("@PKamilly", width / 2, 350);
