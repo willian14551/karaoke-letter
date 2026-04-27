@@ -64,10 +64,10 @@
         { "tempo": 98.33, "texto": "NOW I HAVE GOT THAT FEELING ONCE AGAIN" },
         { "tempo": 102.89, "texto": "I CANNOT EXPLAIN YOU WOULD NOT UNDERSTAND" },
         { "tempo": 106.64, "texto": "THIS IS NOT HOW I AM" },
-        { "tempo": 113.68, "texto": "I HAVE BECOME COMFORTABLY NUMB" },
-        { "tempo": 155.45, "texto": "I HAVE BECOME COMFORTABLY NUMB" },
-        { "tempo": 166.73, "texto": "OKAY" },
-        { "tempo": 170.18, "texto": "JUST A LITTLE PINPRICK" },
+        { "tempo": 113.68, "texto": "IIIIIIIII HAVE BECOME COMFORTABLY NUMB" },
+        { "tempo": 155.45, "texto": "IIIIIIIII HAVE BECOME COMFORTABLY NUMB" },
+        { "tempo": 166.23, "texto": "OKAY" },
+        { "tempo": 169.18, "texto": "JUST A LITTLE PINPRICK" },
         { "tempo": 173.28, "texto": "THERE WILL BE NO MORE" },
         { "tempo": 177.55, "texto": "BUT YOU MAY FEEL A LITTLE SICK" },
         { "tempo": 181.36, "texto": "CAN YOU STAND UP" },
@@ -83,7 +83,7 @@
         { "tempo": 242.93, "texto": "I TURNED TO LOOK BUT IT WAS GONE" },
         { "tempo": 246.93, "texto": "I CANNOT PUT MY FINGER ON IT NOW" },
         { "tempo": 252.14, "texto": "THE CHILD IS GROWN THE DREAM IS GONE" },
-        { "tempo": 257.71, "texto": "I HAVE BECOME COMFORTABLY NUMB" }]
+        { "tempo": 257.71, "texto": "IIIIIIIII HAVE BECOME COMFORTABLY NUMB" }]
     },
     {
       "nivel": "DIFICIL",
