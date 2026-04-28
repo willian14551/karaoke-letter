@@ -1,5 +1,5 @@
 function telaRanking() {
-  textAlign(CENTER, CENTER); 
+  textAlign(CENTER, CENTER);
   desenharBackgroundAnimado();
   desenharMoldura();
 
@@ -10,17 +10,17 @@ function telaRanking() {
 
   textSize(16);
   fill(150);
-  text("<", width / 2 - 120, 250);
-  text(">", width / 2 + 120, 250);
+  text("<", width / 2 - 280, 250);
+  text(">", width / 2 + 280, 250);
 
   textSize(22);
-  let nivelAtualStr = niveis[abaRankingSelecionada];
-  if (nivelAtualStr === "FACIL") fill(0, 200, 0);
-  else if (nivelAtualStr === "MEDIO") fill(200, 150, 0);
+  let musicaAtualStr = listaMusicas[abaRankingSelecionada];
+  if (musicaAtualStr === "What A Wonderful World") fill(0, 200, 0);
+  else if (musicaAtualStr === "Comfortably Numb") fill(200, 150, 0);
   else fill(200, 0, 0);
-  text(nivelAtualStr, width / 2, 250);
+  text(musicaAtualStr, width / 2, 250);
 
-  let lista = rankings[nivelAtualStr];
+  let lista = rankings[musicaAtualStr];
 
   if (lista.length === 0) {
     fill(150);
@@ -29,14 +29,15 @@ function telaRanking() {
   } else {
     textSize(18);
     for (let i = 0; i < lista.length; i++) {
-      let y = 360 + (i * 40);
+      let y = 360 + i * 40;
 
-      if (i === 0) fill(255, 215, 0); 
-      else if (i === 1) fill(192, 192, 192); 
-      else if (i === 2) fill(205, 127, 50); 
-      else fill(200); 
+      if (i === 0) fill(255, 215, 0);
+      else if (i === 1) fill(192, 192, 192);
+      else if (i === 2) fill(205, 127, 50);
+      else fill(200);
 
-      let textoLinha = (i + 1) + "º " + lista[i].nome + " - " + lista[i].pontos + " PTS";
+      let textoLinha =
+        i + 1 + "º " + lista[i].nome + " - " + lista[i].pontos + " PTS";
       text(textoLinha, width / 2, y);
     }
   }
@@ -89,23 +90,25 @@ function telaInserirNome() {
 }
 
 function inserirNomeKeyPressed() {
-
   if (keyCode === BACKSPACE) {
     if (nomeJogadorInput.length > 0) {
-      nomeJogadorInput = nomeJogadorInput.substring(0, nomeJogadorInput.length - 1);
+      nomeJogadorInput = nomeJogadorInput.substring(
+        0,
+        nomeJogadorInput.length - 1,
+      );
       tocarSomUI();
     }
-  } 
-
-  else if (keyCode === ENTER) {
+  } else if (keyCode === ENTER) {
     if (nomeJogadorInput.length > 0) {
-      salvarNovoRecorde(nomeJogadorInput, pontuacao, niveis[dificuldadeSelecionada]);
+      salvarNovoRecorde(
+        nomeJogadorInput,
+        pontuacao,
+        listaMusicas[indiceMusicaSelecionada],
+      );
       tocarSomUI();
-      mudarEstado("RANKING"); 
+      mudarEstado("RANKING");
     }
-  } 
-
-  else if (keyCode >= 65 && keyCode <= 90) {
+  } else if (keyCode >= 65 && keyCode <= 90) {
     if (nomeJogadorInput.length < 5) {
       nomeJogadorInput += key.toUpperCase();
       tocarSomUI();
@@ -121,9 +124,9 @@ function salvarNovoRecorde(nome, pontos, nivelStr) {
   lista.sort((a, b) => b.pontos - a.pontos);
 
   if (lista.length > 5) {
-    lista.pop(); 
+    lista.pop();
   }
 
-  salvarRankings(); 
-  abaRankingSelecionada = niveis.indexOf(nivelStr); 
+  salvarRankings();
+  abaRankingSelecionada = listaMusicas.indexOf(nivelStr);
 }

@@ -16,7 +16,11 @@ let progressoCarregamento = 0;
 let totalAssets = 0;
 let assetsCarregados = 0;
 
-let rankings = { FACIL: [], MEDIO: [], DIFICIL: [] };
+let rankings = {
+  "What A Wonderful World": [],
+  "Comfortably Numb": [],
+  Notion: [],
+};
 let nomeJogadorInput = "";
 let abaRankingSelecionada = 0;
 
@@ -58,7 +62,7 @@ function setup() {
   criarMenu();
   criarBackground();
   carregarRankings();
-  fft = new p5.FFT(0.8);
+  fft = new p5.FFT(0.9);
 }
 
 function draw() {
@@ -182,7 +186,7 @@ function efetivarMudanca(novoEstado) {
 
   if (novoEstado === "GAMEPLAY") {
     iniciarGameplay();
-    musicas[dificuldadeSelecionada].play();
+    musicas[indiceMusicaSelecionada].play();
   }
 
   if (novoEstado === "INICIO") {
@@ -271,10 +275,10 @@ function keyPressed() {
     }
   } else if (estado === "JOGAR") {
     if (keyCode === UP_ARROW) {
-      dificuldadeSelecionada = (dificuldadeSelecionada - 1 + 3) % 3;
+      indiceMusicaSelecionada = (indiceMusicaSelecionada - 1 + 3) % 3;
       tocarSomUI();
     } else if (keyCode === DOWN_ARROW) {
-      dificuldadeSelecionada = (dificuldadeSelecionada + 1) % 3;
+      indiceMusicaSelecionada = (indiceMusicaSelecionada + 1) % 3;
       tocarSomUI();
     } else if (keyCode === ENTER) {
       tocarSomUI();

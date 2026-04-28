@@ -13,15 +13,15 @@ function iniciarGameplay() {
   indiceProximaFrase = 0;
 
   cronogramaLetras =
-    dadosMusicas.musicas[dificuldadeSelecionada].cronogramaLetra;
+    dadosMusicas.musicas[indiceMusicaSelecionada].cronogramaLetra;
 }
 
 function telaGameplay() {
   desenharMoldura();
 
-  let musicaAtual = dadosMusicas.musicas[dificuldadeSelecionada];
-  let capaAtual = imagensCapas[dificuldadeSelecionada];
-  let musicaObj = musicas[dificuldadeSelecionada];
+  let musicaAtual = dadosMusicas.musicas[indiceMusicaSelecionada];
+  let capaAtual = imagensCapas[indiceMusicaSelecionada];
+  let musicaObj = musicas[indiceMusicaSelecionada];
 
   if (musicaObj.isPlaying()) {
     desenharVisualizador();
@@ -179,7 +179,7 @@ function desenharFraseKaraoke(musicaObj) {
 
 function gameplayKeyPressed() {
   if (keyCode === ESCAPE) {
-    musicas[dificuldadeSelecionada].stop();
+    musicas[indiceMusicaSelecionada].stop();
     mudarEstado("INICIO");
     return;
   }
@@ -211,7 +211,7 @@ function gameplayKeyPressed() {
 function verificarFimDeJogo(musicaObj) {
   // 1. Condição de Vitória: Música acabou e pontuação está acima do limite
   if (indiceProximaFrase >= cronogramaLetras.length && !musicaObj.isPlaying()) {
-    let nivelStr = niveis[dificuldadeSelecionada];
+    let nivelStr = dadosMusicas.musicas[indiceMusicaSelecionada].titulo;
 
     if (verificaSeEhRecorde(pontuacao, nivelStr)) {
       nomeJogadorInput = "";
