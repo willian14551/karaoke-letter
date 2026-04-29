@@ -118,11 +118,11 @@ function desenharFraseKaraoke(musicaObj) {
     textAlign(CENTER, CENTER);
     noStroke();
 
-    let tamanhoBase = 18;
+    let tamanhoBase = 14;
     textSize(tamanhoBase);
 
     if (textWidth(fraseAtiva.texto) > width - 120) {
-      tamanhoBase = 12;
+      tamanhoBase = 9;
     }
 
     textSize(tamanhoBase + pulso);
@@ -283,7 +283,7 @@ function desenharVisualizador() {
 
     let distEsq = x - margem;
     let distDir = width - margem - x;
-    let areaFade = 1000;
+    let areaFade = 800;
 
     if (distEsq < areaFade) {
       y *= map(distEsq, 0, areaFade, 0, 1);
