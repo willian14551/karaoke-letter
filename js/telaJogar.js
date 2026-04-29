@@ -18,7 +18,7 @@ function telaJogar() {
 
   for (let i = 0; i < musicas.length; i++) {
     let m = musicas[i];
-    let dif = m.dificuldade || "?";
+    let dif = m.nivel || "?";
     let y = 270 + i * 75;
 
     if (i === musicaSelecionada) {
