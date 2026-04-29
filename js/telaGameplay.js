@@ -12,16 +12,15 @@ function iniciarGameplay() {
   pontuacao = 0;
   indiceProximaFrase = 0;
 
-  cronogramaLetras =
-    dadosMusicas.musicas[dificuldadeSelecionada].cronogramaLetra;
+  cronogramaLetras = dadosMusicas.musicas[musicaSelecionada].cronogramaLetra;
 }
 
 function telaGameplay() {
   desenharMoldura();
 
-  let musicaAtual = dadosMusicas.musicas[dificuldadeSelecionada];
-  let capaAtual = imagensCapas[dificuldadeSelecionada];
-  let musicaObj = musicas[dificuldadeSelecionada];
+  let musicaAtual = dadosMusicas.musicas[musicaSelecionada];
+  let capaAtual = imagensCapas[musicaSelecionada];
+  let musicaObj = musicas[musicaSelecionada];
 
   if (musicaObj.isPlaying()) {
     desenharVisualizador();
@@ -33,7 +32,6 @@ function telaGameplay() {
     if (musicaObj.isPlaying()) {
       fft.analyze();
       let grave = fft.getEnergy("bass");
-
       tamanhoCapa = map(grave, 0, 255, 160, 200);
     }
 
@@ -48,8 +46,10 @@ function telaGameplay() {
   textSize(15);
   text("PONTUACAO: " + pontuacao, 60, 55);
 
+  // Mostra título + dificuldade no canto superior direito
+  let dif = musicaAtual.dificuldade || "";
   textAlign(RIGHT, TOP);
-  text(musicaAtual.titulo.toUpperCase(), width - 60, 55);
+  text(musicaAtual.titulo.toUpperCase() + (dif ? "  [" + dif + "]" : ""), width - 60, 55);
 
   gerenciarKaraoke(musicaObj);
   desenharFraseKaraoke(musicaObj);
@@ -95,7 +95,6 @@ function desenharFraseKaraoke(musicaObj) {
   let pulso = 0;
   if (musicaObj.isPlaying()) {
     let grave = fft.getEnergy("bass");
-
     pulso = map(grave, 0, 255, 0, 8);
   }
 
@@ -179,7 +178,7 @@ function desenharFraseKaraoke(musicaObj) {
 
 function gameplayKeyPressed() {
   if (keyCode === ESCAPE) {
-    musicas[dificuldadeSelecionada].stop();
+    musicas[musicaSelecionada].stop();
     mudarEstado("INICIO");
     return;
   }
@@ -188,9 +187,7 @@ function gameplayKeyPressed() {
     let caractere = keyCode === 32 ? " " : key.toUpperCase();
 
     if (fraseAtiva !== null && fraseAtiva.digitado !== fraseAtiva.texto) {
-      let proximoCaractere = fraseAtiva.texto.charAt(
-        fraseAtiva.digitado.length,
-      );
+      let proximoCaractere = fraseAtiva.texto.charAt(fraseAtiva.digitado.length);
 
       if (caractere === proximoCaractere) {
         fraseAtiva.digitado += caractere;
@@ -209,22 +206,22 @@ function gameplayKeyPressed() {
 }
 
 function verificarFimDeJogo(musicaObj) {
-  // 1. Condição de Vitória: Música acabou e pontuação está acima do limite
+  // Condição de Vitória: Música acabou
   if (indiceProximaFrase >= cronogramaLetras.length && !musicaObj.isPlaying()) {
-    let nivelStr = niveis[dificuldadeSelecionada];
+    let tituloMusica = dadosMusicas.musicas[musicaSelecionada].titulo;
 
-    if (verificaSeEhRecorde(pontuacao, nivelStr)) {
+    if (verificaSeEhRecorde(pontuacao, tituloMusica)) {
       nomeJogadorInput = "";
       mudarEstado("NOME_RANKING");
     } else {
-      mudarEstado("SUCESSO"); // <-- Nova tela de sucesso
+      mudarEstado("SUCESSO");
     }
   }
 
-  // 2. Condição de Derrota: Pontuação caiu muito
+  // Condição de Derrota: Pontuação caiu muito
   if (pontuacao < -500) {
     musicaObj.stop();
-    mudarEstado("GAME_OVER"); // <-- Nova tela de Game Over
+    mudarEstado("GAME_OVER");
   }
 }
 
@@ -271,7 +268,6 @@ function desenharVisualizador() {
   let wave = fft.waveform();
 
   push();
-
   translate(0, height / 2 - 160);
 
   noFill();
@@ -283,7 +279,6 @@ function desenharVisualizador() {
   beginShape();
   for (let i = 0; i < wave.length; i += 4) {
     let x = map(i, 0, wave.length, margem, width - margem);
-
     let y = map(wave[i], -1, 1, -40, 40);
 
     let distEsq = x - margem;

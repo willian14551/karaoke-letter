@@ -1,5 +1,9 @@
-let dificuldadeSelecionada = 0;
-let niveis = ["FACIL", "MEDIO", "DIFICIL"];
+function corDificuldade(dif) {
+  if (dif === "FACIL") return color(0, 200, 0);
+  if (dif === "MEDIO") return color(200, 150, 0);
+  if (dif === "DIFICIL") return color(200, 0, 0);
+  return color(0, 200, 255);
+}
 
 function telaJogar() {
   desenharBackgroundAnimado();
@@ -10,29 +14,31 @@ function telaJogar() {
   textSize(36);
   text("JOGAR", width / 2, 150);
 
-  let musicaAtual = dadosMusicas.musicas[dificuldadeSelecionada];
+  let musicas = dadosMusicas.musicas;
 
-  stroke(255);
-  strokeWeight(5);
-  noFill();
-  fill(0);
-  textSize(22);
-  text(musicaAtual.titulo, width / 2, 250);
-  textSize(14);
-  text(musicaAtual.artista, width / 2, 280);
+  for (let i = 0; i < musicas.length; i++) {
+    let m = musicas[i];
+    let dif = m.dificuldade || "?";
+    let y = 270 + i * 75;
 
-  for (let i = 0; i < niveis.length; i++) {
-    let y = 380 + i * 50;
-    if (i === dificuldadeSelecionada) {
-      if (niveis[i] === "FACIL") fill(0, 200, 0);
-      else if (niveis[i] === "MEDIO") fill(200, 150, 0);
-      else fill(200, 0, 0);
-      textSize(24);
-      text("> " + niveis[i] + " <", width / 2, y);
+    if (i === musicaSelecionada) {
+      fill(corDificuldade(dif));
+      textSize(20);
+      text("> " + m.titulo + "  [" + dif + "] <", width / 2, y);
+
+      fill(180);
+      noStroke();
+      textSize(11);
+      text(m.artista, width / 2, y + 26);
     } else {
-      fill(150);
-      textSize(18);
-      text(niveis[i], width / 2, y);
+      fill(120);
+      noStroke();
+      textSize(14);
+      text(m.titulo + "  [" + dif + "]", width / 2, y);
     }
   }
+
+  fill(200);
+  textSize(12);
+  text("↑↓ SELECIONAR   ENTER JOGAR   ESC VOLTAR", width / 2, height - 60);
 }

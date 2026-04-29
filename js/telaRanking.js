@@ -1,5 +1,5 @@
 function telaRanking() {
-  textAlign(CENTER, CENTER); 
+  textAlign(CENTER, CENTER);
   desenharBackgroundAnimado();
   desenharMoldura();
 
@@ -8,33 +8,42 @@ function telaRanking() {
   textSize(36);
   text("HALL DA FAMA", width / 2, 150);
 
+  let musicas = dadosMusicas.musicas;
+  let musicaAba = musicas[abaRankingSelecionada];
+  let dif = musicaAba.dificuldade || "?";
+
   textSize(16);
   fill(150);
-  text("<", width / 2 - 120, 250);
-  text(">", width / 2 + 120, 250);
+  text("<", width / 2 - 260, 250);
+  text(">", width / 2 + 260, 250);
 
-  textSize(22);
-  let nivelAtualStr = niveis[abaRankingSelecionada];
-  if (nivelAtualStr === "FACIL") fill(0, 200, 0);
-  else if (nivelAtualStr === "MEDIO") fill(200, 150, 0);
-  else fill(200, 0, 0);
-  text(nivelAtualStr, width / 2, 250);
+  // Cor pelo nível da música da aba
+  if (dif === "FACIL") fill(0, 200, 0);
+  else if (dif === "MEDIO") fill(200, 150, 0);
+  else if (dif === "DIFICIL") fill(200, 0, 0);
+  else fill(0, 200, 255);
+  textSize(18);
+  text(musicaAba.titulo + "  [" + dif + "]", width / 2, 250);
 
-  let lista = rankings[nivelAtualStr];
+  fill(120);
+  textSize(10);
+  text(musicaAba.artista, width / 2, 280);
+
+  let lista = rankings[musicaAba.titulo] || [];
 
   if (lista.length === 0) {
     fill(150);
     textSize(14);
-    text("AINDA NÃO HÁ RECORDES NESTA DIFICULDADE.", width / 2, height / 2);
+    text("AINDA NÃO HÁ RECORDES NESTA MÚSICA.", width / 2, height / 2);
   } else {
     textSize(18);
     for (let i = 0; i < lista.length; i++) {
-      let y = 360 + (i * 40);
+      let y = 360 + i * 40;
 
-      if (i === 0) fill(255, 215, 0); 
-      else if (i === 1) fill(192, 192, 192); 
-      else if (i === 2) fill(205, 127, 50); 
-      else fill(200); 
+      if (i === 0) fill(255, 215, 0);
+      else if (i === 1) fill(192, 192, 192);
+      else if (i === 2) fill(205, 127, 50);
+      else fill(200);
 
       let textoLinha = (i + 1) + "º " + lista[i].nome + " - " + lista[i].pontos + " PTS";
       text(textoLinha, width / 2, y);
@@ -47,14 +56,15 @@ function telaRanking() {
 }
 
 function rankingKeyPressed() {
+  let total = dadosMusicas.musicas.length;
   if (keyCode === ESCAPE) {
     tocarSomUI();
     mudarEstado("INICIO");
   } else if (keyCode === LEFT_ARROW) {
-    abaRankingSelecionada = (abaRankingSelecionada - 1 + 3) % 3;
+    abaRankingSelecionada = (abaRankingSelecionada - 1 + total) % total;
     tocarSomUI();
   } else if (keyCode === RIGHT_ARROW) {
-    abaRankingSelecionada = (abaRankingSelecionada + 1) % 3;
+    abaRankingSelecionada = (abaRankingSelecionada + 1) % total;
     tocarSomUI();
   }
 }
@@ -89,23 +99,19 @@ function telaInserirNome() {
 }
 
 function inserirNomeKeyPressed() {
-
   if (keyCode === BACKSPACE) {
     if (nomeJogadorInput.length > 0) {
       nomeJogadorInput = nomeJogadorInput.substring(0, nomeJogadorInput.length - 1);
       tocarSomUI();
     }
-  } 
-
-  else if (keyCode === ENTER) {
+  } else if (keyCode === ENTER) {
     if (nomeJogadorInput.length > 0) {
-      salvarNovoRecorde(nomeJogadorInput, pontuacao, niveis[dificuldadeSelecionada]);
+      let tituloMusica = dadosMusicas.musicas[musicaSelecionada].titulo;
+      salvarNovoRecorde(nomeJogadorInput, pontuacao, tituloMusica);
       tocarSomUI();
-      mudarEstado("RANKING"); 
+      mudarEstado("RANKING");
     }
-  } 
-
-  else if (keyCode >= 65 && keyCode <= 90) {
+  } else if (keyCode >= 65 && keyCode <= 90) {
     if (nomeJogadorInput.length < 5) {
       nomeJogadorInput += key.toUpperCase();
       tocarSomUI();
@@ -113,17 +119,16 @@ function inserirNomeKeyPressed() {
   }
 }
 
-function salvarNovoRecorde(nome, pontos, nivelStr) {
-  let lista = rankings[nivelStr];
+function salvarNovoRecorde(nome, pontos, tituloMusica) {
+  if (!rankings[tituloMusica]) rankings[tituloMusica] = [];
+  let lista = rankings[tituloMusica];
 
   lista.push({ nome: nome, pontos: pontos });
-
   lista.sort((a, b) => b.pontos - a.pontos);
+  if (lista.length > 5) lista.pop();
 
-  if (lista.length > 5) {
-    lista.pop(); 
-  }
+  salvarRankings();
 
-  salvarRankings(); 
-  abaRankingSelecionada = niveis.indexOf(nivelStr); 
+  // Abre a aba do ranking na música recém-terminada
+  abaRankingSelecionada = dadosMusicas.musicas.findIndex(m => m.titulo === tituloMusica);
 }

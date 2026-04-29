@@ -16,14 +16,12 @@ function telaGameOver() {
     );
   }
 
-  // Título com tom dramático
   fill(255, 50, 50);
   noStroke();
   textSize(42);
   textAlign(CENTER, CENTER);
   text("GAME OVER", width / 2, 150);
 
-  // Informações de desempenho
   fill(255);
   textSize(20);
   text("Sua pontuação foi muito baixa...", width / 2, 250);
@@ -47,7 +45,6 @@ function telaSucesso() {
   desenharBackgroundAnimado();
   desenharMoldura();
 
-  // Efeito de pulso para o título de vitória
   let pulso = sin(frameCount * 0.1) * 5;
 
   fill(50, 255, 50);
@@ -60,12 +57,10 @@ function telaSucesso() {
   textSize(20);
   text("Música concluída com sucesso!", width / 2, 250);
 
-  // Exibição da pontuação final
   textSize(32);
   fill(0, 255, 255);
   text("PONTUAÇÃO TOTAL: " + pontuacao, width / 2, 320);
 
-  // Feedback baseado na pontuação
   textSize(16);
   fill(200);
   if (pontuacao > 2000) text("VOCÊ É UM MESTRE DA DIGITAÇÃO!", width / 2, 400);
@@ -79,6 +74,7 @@ function telaSucesso() {
     height - 60,
   );
 }
+
 function fimDeJogoKeyPressed() {
   if (keyCode === ESCAPE) {
     tocarSomUI();
@@ -87,6 +83,11 @@ function fimDeJogoKeyPressed() {
 
   if (keyCode === ENTER) {
     tocarSomUI();
-    mudarEstado("GAMEPLAY");
+    if (estado === "SUCESSO") {
+      mudarEstado("RANKING");
+    } else {
+      // GAME_OVER: reinicia a música atual
+      mudarEstado("GAMEPLAY");
+    }
   }
 }
