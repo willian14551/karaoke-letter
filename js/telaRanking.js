@@ -10,12 +10,12 @@ function telaRanking() {
 
   let musicas = dadosMusicas.musicas;
   let musicaAba = musicas[abaRankingSelecionada];
-  let dif = musicaAba.dificuldade || "?";
+  let dif = musicaAba.nivel || "?";
 
   textSize(16);
   fill(150);
-  text("<", width / 2 - 260, 250);
-  text(">", width / 2 + 260, 250);
+  text("<", width / 2 - 320, 250);
+  text(">", width / 2 + 320, 250);
 
   // Cor pelo nível da música da aba
   if (dif === "FACIL") fill(0, 200, 0);
@@ -45,7 +45,8 @@ function telaRanking() {
       else if (i === 2) fill(205, 127, 50);
       else fill(200);
 
-      let textoLinha = (i + 1) + "º " + lista[i].nome + " - " + lista[i].pontos + " PTS";
+      let textoLinha =
+        i + 1 + "º " + lista[i].nome + " - " + lista[i].pontos + " PTS";
       text(textoLinha, width / 2, y);
     }
   }
@@ -101,7 +102,10 @@ function telaInserirNome() {
 function inserirNomeKeyPressed() {
   if (keyCode === BACKSPACE) {
     if (nomeJogadorInput.length > 0) {
-      nomeJogadorInput = nomeJogadorInput.substring(0, nomeJogadorInput.length - 1);
+      nomeJogadorInput = nomeJogadorInput.substring(
+        0,
+        nomeJogadorInput.length - 1,
+      );
       tocarSomUI();
     }
   } else if (keyCode === ENTER) {
@@ -130,5 +134,7 @@ function salvarNovoRecorde(nome, pontos, tituloMusica) {
   salvarRankings();
 
   // Abre a aba do ranking na música recém-terminada
-  abaRankingSelecionada = dadosMusicas.musicas.findIndex(m => m.titulo === tituloMusica);
+  abaRankingSelecionada = dadosMusicas.musicas.findIndex(
+    (m) => m.titulo === tituloMusica,
+  );
 }
