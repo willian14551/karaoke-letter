@@ -118,11 +118,11 @@ function desenharFraseKaraoke(musicaObj) {
     textAlign(CENTER, CENTER);
     noStroke();
 
-    let tamanhoBase = 14;
+    let tamanhoBase = 12;
     textSize(tamanhoBase);
 
     if (textWidth(fraseAtiva.texto) > width - 120) {
-      tamanhoBase = 9;
+      tamanhoBase = 8;
     }
 
     textSize(tamanhoBase + pulso);
