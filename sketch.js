@@ -4,7 +4,7 @@ let estado = "LOADING";
 let fontePixel;
 let dadosMusicas;
 let palavrasBackground = [];
-let textosBg = ["HTML5", "CSS", "JAVASCRIPT", "ARRAY", "CLASS", "WEB", "GAMES", "MINECRAFT" ];
+let textosBg = ["HTML5", "CSS", "JAVASCRIPT", "ARRAY", "CLASS", "WEB", "GAMES", "MINECRAFT", "TERRARIA" ];
 let imagensCapas = [];
 
 let musicas = [];
