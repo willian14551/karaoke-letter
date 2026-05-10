@@ -40,5 +40,9 @@ function telaJogar() {
 
   fill(200);
   textSize(12);
-  text("↑↓ SELECIONAR   ENTER JOGAR   ESC VOLTAR", width / 2, height - 60);
+  text(
+    "↑↓ SELECIONAR   ENTER JOGAR   PRESSIONE Q PARA VOLTAR",
+    width / 2,
+    height - 60,
+  );
 }

@@ -15,5 +15,5 @@ function telaCreditos() {
   text("@willian14551", width / 2, 450);
 
   textSize(12);
-  text("PRESSIONE ESC PARA VOLTAR", width / 2, height - 60);
+  text("PRESSIONE Q PARA VOLTAR", width / 2, height - 60);
 }

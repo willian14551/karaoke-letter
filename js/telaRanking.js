@@ -58,7 +58,7 @@ function telaRanking() {
 
 function rankingKeyPressed() {
   let total = dadosMusicas.musicas.length;
-  if (keyCode === ESCAPE) {
+  if (key == "q" || key == "Q") {
     tocarSomUI();
     mudarEstado("INICIO");
   } else if (keyCode === LEFT_ARROW) {

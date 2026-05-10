@@ -35,7 +35,7 @@ function telaGameOver() {
   textSize(12);
   fill(200);
   text(
-    "PRESSIONE ENTER PARA REINICIAR OU PRESSIONE ESC PARA VOLTAR AO MENU",
+    "PRESSIONE ENTER PARA REINICIAR OU PRESSIONE Q PARA VOLTAR AO MENU",
     width / 2,
     height - 60,
   );
@@ -76,7 +76,7 @@ function telaSucesso() {
 }
 
 function fimDeJogoKeyPressed() {
-  if (keyCode === ESCAPE) {
+  if (key == "q" || key == "Q") {
     tocarSomUI();
     mudarEstado("INICIO");
   }
@@ -86,7 +86,6 @@ function fimDeJogoKeyPressed() {
     if (estado === "SUCESSO") {
       mudarEstado("RANKING");
     } else {
-      // GAME_OVER: reinicia a música atual
       mudarEstado("GAMEPLAY");
     }
   }

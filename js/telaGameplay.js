@@ -46,10 +46,13 @@ function telaGameplay() {
   textSize(15);
   text("PONTUACAO: " + pontuacao, 60, 55);
 
-  // Mostra título + dificuldade no canto superior direito
   let dif = musicaAtual.dificuldade || "";
   textAlign(RIGHT, TOP);
-  text(musicaAtual.titulo.toUpperCase() + (dif ? "  [" + dif + "]" : ""), width - 60, 55);
+  text(
+    musicaAtual.titulo.toUpperCase() + (dif ? "  [" + dif + "]" : ""),
+    width - 60,
+    55,
+  );
 
   gerenciarKaraoke(musicaObj);
   desenharFraseKaraoke(musicaObj);
@@ -177,7 +180,7 @@ function desenharFraseKaraoke(musicaObj) {
 }
 
 function gameplayKeyPressed() {
-  if (keyCode === ESCAPE) {
+  if (key == "q" || key == "Q") {
     musicas[musicaSelecionada].stop();
     mudarEstado("INICIO");
     return;
@@ -187,7 +190,9 @@ function gameplayKeyPressed() {
     let caractere = keyCode === 32 ? " " : key.toUpperCase();
 
     if (fraseAtiva !== null && fraseAtiva.digitado !== fraseAtiva.texto) {
-      let proximoCaractere = fraseAtiva.texto.charAt(fraseAtiva.digitado.length);
+      let proximoCaractere = fraseAtiva.texto.charAt(
+        fraseAtiva.digitado.length,
+      );
 
       if (caractere === proximoCaractere) {
         fraseAtiva.digitado += caractere;
@@ -206,7 +211,6 @@ function gameplayKeyPressed() {
 }
 
 function verificarFimDeJogo(musicaObj) {
-  // Condição de Vitória: Música acabou
   if (indiceProximaFrase >= cronogramaLetras.length && !musicaObj.isPlaying()) {
     let tituloMusica = dadosMusicas.musicas[musicaSelecionada].titulo;
 
@@ -218,7 +222,6 @@ function verificarFimDeJogo(musicaObj) {
     }
   }
 
-  // Condição de Derrota: Pontuação caiu muito
   if (pontuacao < -500) {
     musicaObj.stop();
     mudarEstado("GAME_OVER");

@@ -4,7 +4,17 @@ let estado = "LOADING";
 let fontePixel;
 let dadosMusicas;
 let palavrasBackground = [];
-let textosBg = ["HTML5", "CSS", "JAVASCRIPT", "ARRAY", "CLASS", "WEB", "GAMES", "MINECRAFT", "TERRARIA" ];
+let textosBg = [
+  "HTML5",
+  "CSS",
+  "JAVASCRIPT",
+  "ARRAY",
+  "CLASS",
+  "WEB",
+  "GAMES",
+  "MINECRAFT",
+  "TERRARIA",
+];
 let imagensCapas = [];
 
 let musicas = [];
@@ -21,6 +31,8 @@ let nomeJogadorInput = "";
 let abaRankingSelecionada = 0;
 
 let musicaSelecionada = 0;
+
+let estadoAnterior;
 
 async function preload() {
   fontePixel = await loadFont("assets/fonts/PressStart2P-Regular.ttf");
@@ -77,7 +89,11 @@ function draw() {
 
   switch (estado) {
     case "INICIO":
+      estadoAnterior = "INICIO";
       telaInicial();
+      break;
+    case "OPÇÕES":
+      telaOpcoes();
       break;
     case "JOGAR":
       telaJogar();
@@ -105,6 +121,9 @@ function draw() {
       break;
     case "SUCESSO":
       telaSucesso();
+      break;
+    case "PAUSE":
+      telaPause();
       break;
   }
 }
@@ -197,18 +216,52 @@ function efetivarMudanca(novoEstado) {
 
 function criarMenu() {
   botoes = [];
-
   botoes.push(
-    new Botao(width / 2, 300, 200, 50, "JOGAR", color(0, 150, 255), color(0, 255, 255)),
+    new Botao(
+      width / 2,
+      280,
+      200,
+      45,
+      "JOGAR",
+      color(0, 150, 255),
+      color(0, 255, 255),
+    ),
   );
   botoes.push(
-    new Botao(width / 2, 370, 200, 50, "RANKING", color(200, 150, 0), color(255, 200, 0)),
+    new Botao(
+      width / 2,
+      340,
+      200,
+      45,
+      "RANKING",
+      color(200, 150, 0),
+      color(255, 200, 0),
+    ),
   );
   botoes.push(
-    new Botao(width / 2, 440, 200, 50, "SOBRE", color(180), color(255)),
+    new Botao(
+      width / 2,
+      400,
+      200,
+      45,
+      "OPÇÕES",
+      color(100, 255, 100),
+      color(150, 255, 150),
+    ),
   );
   botoes.push(
-    new Botao(width / 2, 510, 200, 50, "CRÉDITOS", color(180, 0, 0), color(255, 0, 0)),
+    new Botao(width / 2, 460, 200, 45, "SOBRE", color(180), color(255)),
+  );
+  botoes.push(
+    new Botao(
+      width / 2,
+      520,
+      200,
+      45,
+      "CRÉDITOS",
+      color(180, 0, 0),
+      color(255, 0, 0),
+    ),
   );
 }
 
@@ -248,6 +301,9 @@ function keyPressed() {
       tocarSomUI();
       mudarEstado(botoes[selecionado].texto);
     }
+  } else if (estado === "OPÇÕES") {
+    opcoesKeyPressed();
+    return false;
   } else if (estado === "JOGAR") {
     let total = dadosMusicas.musicas.length;
     if (keyCode === UP_ARROW) {
@@ -259,12 +315,22 @@ function keyPressed() {
     } else if (keyCode === ENTER) {
       tocarSomUI();
       mudarEstado("GAMEPLAY");
-    } else if (keyCode === ESCAPE) {
+    } else if (key === "q" || key === "Q") {
       tocarSomUI();
       mudarEstado("INICIO");
     }
   } else if (estado === "GAMEPLAY") {
+    if (keyCode === ENTER) {
+      musicas[musicaSelecionada].pause();
+      estado = "PAUSE";
+      selecionadoPause = 0;
+      tocarSomUI();
+      return false;
+    }
     gameplayKeyPressed();
+    return false;
+  } else if (estado === "PAUSE") {
+    pauseKeyPressed();
     return false;
   } else if (estado === "RANKING") {
     rankingKeyPressed();
@@ -373,7 +439,6 @@ function carregarRankings() {
     salvos = JSON.parse(localStorage.getItem("karaokeRankings") || "{}");
   } catch (e) {}
 
-  // Se dadosMusicas já carregou, inicializa por música senão usa o que foi salvo
   if (dadosMusicas && dadosMusicas.musicas) {
     rankings = {};
     for (let musica of dadosMusicas.musicas) {
