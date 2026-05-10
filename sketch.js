@@ -342,7 +342,7 @@ function keyPressed() {
     fimDeJogoKeyPressed();
     return false;
   } else {
-    if (keyCode === ESCAPE) {
+    if (key === "q" || key === "Q") {
       tocarSomUI();
       mudarEstado("INICIO");
     }
