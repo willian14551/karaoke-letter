@@ -53,7 +53,7 @@ function telaRanking() {
 
   textSize(12);
   fill(200);
-  text("PRESSIONE ESC PARA VOLTAR", width / 2, height - 60);
+  text("PRESSIONE Q PARA VOLTAR", width / 2, height - 60);
 }
 
 function rankingKeyPressed() {
