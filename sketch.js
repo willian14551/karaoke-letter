@@ -305,12 +305,17 @@ function keyPressed() {
     opcoesKeyPressed();
     return false;
   } else if (estado === "JOGAR") {
-    let total = dadosMusicas.musicas.length;
+    let musicasFiltradas = dadosMusicas.musicas.filter(m => {
+      if (categoriaAtual === "TODAS") return true;
+      return m.nivel === categoriaAtual;
+    });
+    let totalFiltrado = musicasFiltradas.length;
+
     if (keyCode === UP_ARROW) {
-      musicaSelecionada = (musicaSelecionada - 1 + total) % total;
-      tocarSomUI();
+      musicaSelecionada = (musicaSelecionada - 1 + totalFiltrado) % totalFiltrado;
+        tocarSomUI();
     } else if (keyCode === DOWN_ARROW) {
-      musicaSelecionada = (musicaSelecionada + 1) % total;
+      musicaSelecionada = (musicaSelecionada + 1) % totalFiltrado;
       tocarSomUI();
     } else if (keyCode === ENTER) {
       tocarSomUI();
@@ -318,6 +323,9 @@ function keyPressed() {
     } else if (key === "q" || key === "Q") {
       tocarSomUI();
       mudarEstado("INICIO");
+    } else if (key === 'f' || key === 'F') {
+      tocarSomUI();
+      mudarCategoria();
     }
   } else if (estado === "GAMEPLAY") {
     if (keyCode === ENTER) {
@@ -341,11 +349,9 @@ function keyPressed() {
   } else if (estado === "GAME_OVER" || estado === "SUCESSO") {
     fimDeJogoKeyPressed();
     return false;
-  } else {
-    if (key === "q" || key === "Q") {
-      tocarSomUI();
-      mudarEstado("INICIO");
-    }
+  } else if (key === "q" || key === "Q") {
+    tocarSomUI();
+    mudarEstado("INICIO");
   }
 }
 
