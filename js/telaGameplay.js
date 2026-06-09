@@ -4,6 +4,8 @@ let particulas = [];
 let pontuacao = 0;
 let cronogramaLetras = [];
 let ondasDeSom = [];
+let comboAtual = 0;
+let multiplicador = 1;
 
 function iniciarGameplay() {
   particulas = [];
@@ -11,16 +13,24 @@ function iniciarGameplay() {
   fraseAtiva = null;
   pontuacao = 0;
   indiceProximaFrase = 0;
+  comboAtual = 0;
+  multiplicador = 1;
 
   cronogramaLetras = dadosMusicas.musicas[musicaSelecionada].cronogramaLetra;
 }
 
 function telaGameplay() {
-  desenharMoldura();
-
   let musicaAtual = dadosMusicas.musicas[musicaSelecionada];
   let capaAtual = imagensCapas[musicaSelecionada];
   let musicaObj = musicas[musicaSelecionada];
+
+  let grave = 0;
+  if (musicaObj.isPlaying()) {
+    fft.analyze();
+    grave = fft.getEnergy("bass");
+  }
+
+  desenharMolduraGameplay();
 
   if (musicaObj.isPlaying()) {
     desenharVisualizador();
@@ -28,28 +38,87 @@ function telaGameplay() {
 
   if (capaAtual) {
     let tamanhoCapa = 160;
-
     if (musicaObj.isPlaying()) {
-      fft.analyze();
-      let grave = fft.getEnergy("bass");
       tamanhoCapa = map(grave, 0, 255, 160, 200);
     }
-
     imageMode(CENTER);
     image(capaAtual, width / 2, height / 2 - 160, tamanhoCapa, tamanhoCapa);
     filter(POSTERIZE, 4);
   }
 
-  noStroke();
-  textAlign(LEFT, TOP);
-  fill(255);
-  textSize(15);
-  text("PONTUACAO: " + pontuacao, 60, 55);
+  let corHUD;
+  let brilhoHUD = 0;
+  if (comboAtual >= 150) {
+    colorMode(HSB);
+    corHUD = color((frameCount * 4) % 360, 255, 255);
+    colorMode(RGB);
+    brilhoHUD = 15;
+  } else if (comboAtual >= 80) {
+    corHUD = color(255, 200, 0);
+    brilhoHUD = 10;
+  } else if (comboAtual >= 30) {
+    corHUD = color(0, 255, 255);
+    brilhoHUD = 5;
+  } else {
+    corHUD = color(255);
+    brilhoHUD = 0;
+  }
 
-  // Mostra título + dificuldade no canto superior direito
-  let dif = musicaAtual.dificuldade || "";
+  let escalaHUD = 1;
+  if (comboAtual > 0 && musicaObj.isPlaying()) {
+    escalaHUD = map(grave, 0, 255, 1, 1.15);
+  }
+
+  push();
+  translate(70, 70);
+  scale(escalaHUD);
+  textAlign(LEFT, TOP);
+  fill(corHUD);
+  noStroke();
+  if (brilhoHUD > 0) {
+    drawingContext.shadowBlur = brilhoHUD;
+    drawingContext.shadowColor = corHUD;
+  }
+  textSize(14);
+  text("PONTUACAO: " + pontuacao, 0, 0);
+  pop();
+
+  push();
+  translate(width - 70, 70);
+  scale(escalaHUD);
   textAlign(RIGHT, TOP);
-  text(musicaAtual.titulo.toUpperCase() + (dif ? "  [" + dif + "]" : ""), width - 60, 55);
+  fill(corHUD);
+  noStroke();
+  if (brilhoHUD > 0) {
+    drawingContext.shadowBlur = brilhoHUD;
+    drawingContext.shadowColor = corHUD;
+  }
+  textSize(14);
+  let dif = musicaAtual.dificuldade || "";
+  text(musicaAtual.titulo.toUpperCase() + (dif ? "  [" + dif + "]" : ""), 0, 0);
+  pop();
+
+  if (comboAtual > 1) {
+    push();
+    translate(width / 2, height / 2 - 280);
+    scale(escalaHUD);
+    
+    textAlign(CENTER, CENTER);
+    fill(corHUD);
+    noStroke();
+    if (brilhoHUD > 0) {
+      drawingContext.shadowBlur = brilhoHUD + 5;
+      drawingContext.shadowColor = corHUD;
+    }
+    
+    textSize(14);
+    text("COMBO: " + comboAtual + "x", 0, 400);
+    
+    drawingContext.shadowBlur = 0;
+    fill(100, 255, 100);
+    text("MULT: " + multiplicador.toFixed(1) + "x", 0, 430);
+    pop(); 
+  }
 
   gerenciarKaraoke(musicaObj);
   desenharFraseKaraoke(musicaObj);
@@ -66,7 +135,11 @@ function gerenciarKaraoke(musicaObj) {
 
   if (tempoAtual >= proxima.tempo && tempoAtual < proxima.tempo + 1.5) {
     if (fraseAtiva !== null && fraseAtiva.digitado !== fraseAtiva.texto) {
-      pontuacao -= 50;
+      let letrasNaoDigitadas = fraseAtiva.texto.length - fraseAtiva.digitado.length;
+      pontuacao -= (letrasNaoDigitadas * 10);
+
+      comboAtual = 0;
+      multiplicador = 1;
       criarExplosao(width / 2, height / 2, [255, 50, 50]);
     }
 
@@ -81,6 +154,12 @@ function gerenciarKaraoke(musicaObj) {
       tempoInicio: proxima.tempo,
       tempoFim: tempoLimite,
     };
+
+    if (ignorarEspaco) {
+      while (fraseAtiva.texto.charAt(fraseAtiva.digitado.length) === " ") {
+        fraseAtiva.digitado += " ";
+      }
+    }
 
     indiceProximaFrase++;
   }
@@ -102,7 +181,12 @@ function desenharFraseKaraoke(musicaObj) {
     tempoAtual > fraseAtiva.tempoFim &&
     fraseAtiva.digitado !== fraseAtiva.texto
   ) {
-    pontuacao -= 50;
+    let textoRestante = fraseAtiva.texto.substring(fraseAtiva.digitado.length);
+    let letrasNaoDigitadas = textoRestante.replace(/ /g, "").length;
+    pontuacao -= (letrasNaoDigitadas * 10); 
+
+    comboAtual = 0;
+    multiplicador = 1;
     criarExplosao(width / 2, height / 2, [255, 50, 50]);
     fraseAtiva = null;
     return;
@@ -131,16 +215,29 @@ function desenharFraseKaraoke(musicaObj) {
     let inicioX = width / 2 - larguraTotal / 2;
 
     textAlign(LEFT, CENTER);
-    fill(255, 200, 0);
-    text(fraseAtiva.digitado, inicioX, posicaoY);
+    
+    let textoJaDigitado = fraseAtiva.digitado;
+    let caractereAtual = fraseAtiva.texto.charAt(textoJaDigitado.length);
+    let textoFaltante = fraseAtiva.texto.substring(textoJaDigitado.length + 1);
 
-    let larguraDigitada = textWidth(fraseAtiva.digitado);
+    fill(255, 200, 0);
+    text(textoJaDigitado, inicioX, posicaoY);
+    let larguraDigitada = textWidth(textoJaDigitado);
+
+    let posXAtual = inicioX + larguraDigitada;
+    fill(255, 60, 60); 
+    text(caractereAtual, posXAtual, posicaoY);
+    let larguraAtual = textWidth(caractereAtual);
+
     fill(255, 255, 255, 150);
-    text(
-      fraseAtiva.texto.substring(fraseAtiva.digitado.length),
-      inicioX + larguraDigitada,
-      posicaoY,
-    );
+    text(textoFaltante, posXAtual + larguraAtual, posicaoY);
+
+    let centroCaractereX = posXAtual + larguraAtual / 2;
+    let yBolinha = posicaoY + (tamanhoBase + pulso) / 2 + 12;
+    
+    let alphaBolinha = map(sin(frameCount * 0.25), -1, 1, 100, 255);
+    fill(255, 60, 60, alphaBolinha);
+    circle(centroCaractereX, yBolinha, 6);
 
     let duracaoTotal = fraseAtiva.tempoFim - fraseAtiva.tempoInicio;
     let tempoPassado = tempoAtual - fraseAtiva.tempoInicio;
@@ -184,6 +281,8 @@ function gameplayKeyPressed() {
   }
 
   if ((keyCode >= 65 && keyCode <= 90) || keyCode === 32) {
+    if (ignorarEspaco && keyCode === 32) return;
+
     let caractere = keyCode === 32 ? " " : key.toUpperCase();
 
     if (fraseAtiva !== null && fraseAtiva.digitado !== fraseAtiva.texto) {
@@ -191,22 +290,42 @@ function gameplayKeyPressed() {
 
       if (caractere === proximoCaractere) {
         fraseAtiva.digitado += caractere;
-        criarExplosaoPequena(
-          random(width / 2 - 100, width / 2 + 100),
-          height / 2 + random(-20, 20),
-        );
+
+        if (ignorarEspaco) {
+          while (fraseAtiva.texto.charAt(fraseAtiva.digitado.length) === " ") {
+            fraseAtiva.digitado += " ";
+          }
+        }
+
+        if (caractere !== " ") {
+          comboAtual++;
+          multiplicador = 1 + Math.floor(comboAtual / 10) * 0.5;
+          pontuacao += Math.floor(10 * multiplicador);
+
+          let corFaisca = [255, 255, 255];
+          if (comboAtual >= 150) corFaisca = [random(255), random(255), random(255)];
+          else if (comboAtual >= 80) corFaisca = [255, 200, 0];
+          else if (comboAtual >= 30) corFaisca = [0, 255, 255];
+
+          criarExplosaoPequena(
+            random(width / 2 - 100, width / 2 + 100),
+            height / 2 + random(-20, 20),
+            corFaisca
+          );
+        }
 
         if (fraseAtiva.digitado === fraseAtiva.texto) {
-          pontuacao += fraseAtiva.texto.length * 10;
           criarExplosao(width / 2, height / 2, [50, 255, 50]);
         }
+      } else {
+        comboAtual = 0;
+        multiplicador = 1;
       }
     }
   }
 }
 
 function verificarFimDeJogo(musicaObj) {
-  // Condição de Vitória: Música acabou
   if (indiceProximaFrase >= cronogramaLetras.length && !musicaObj.isPlaying()) {
     let tituloMusica = dadosMusicas.musicas[musicaSelecionada].titulo;
 
@@ -218,7 +337,6 @@ function verificarFimDeJogo(musicaObj) {
     }
   }
 
-  // Condição de Derrota: Pontuação caiu muito
   if (pontuacao < -500) {
     musicaObj.stop();
     mudarEstado("GAME_OVER");
@@ -238,7 +356,7 @@ function criarExplosao(ex, ey, cor) {
   }
 }
 
-function criarExplosaoPequena(ex, ey) {
+function criarExplosaoPequena(ex, ey, cor = [255, 200, 0]) {
   for (let i = 0; i < 5; i++) {
     particulas.push({
       x: ex,
@@ -246,7 +364,7 @@ function criarExplosaoPequena(ex, ey) {
       vx: random(-2, 2),
       vy: random(-2, 2),
       vida: 255,
-      cor: [255, 200, 0],
+      cor: cor,
     });
   }
 }
@@ -294,5 +412,52 @@ function desenharVisualizador() {
     vertex(x, y);
   }
   endShape();
+  pop();
+}
+
+function desenharMolduraGameplay() {
+  let corBorda;
+  let espessura = 6;
+  let brilho = 0;
+  let velocidadeTraco = 0;
+
+  if (comboAtual < 30) {
+    corBorda = color(200);
+  } else if (comboAtual < 80) {
+    corBorda = color(0, 255, 255);
+    brilho = 15;
+    velocidadeTraco = 1;
+  } else if (comboAtual < 150) {
+    corBorda = color(255, 200, 0);  
+    brilho = 25;
+    velocidadeTraco = 2;
+  } else {
+    colorMode(HSB);
+    corBorda = color((frameCount * 4) % 360, 255, 255);
+    colorMode(RGB);
+    brilho = 40;
+    velocidadeTraco = 4;
+  }
+
+  push();
+  stroke(corBorda);
+  strokeWeight(espessura);
+  noFill();
+  
+  if (brilho > 0) {
+    drawingContext.shadowBlur = brilho;
+    drawingContext.shadowColor = corBorda;
+  }
+  
+  drawingContext.setLineDash([15, 15]);
+  
+  if (velocidadeTraco > 0) {
+     drawingContext.lineDashOffset = -frameCount * velocidadeTraco;
+  }
+
+  rect(width / 2, height / 2, width - 80, height - 80);
+  
+  drawingContext.setLineDash([]);
+  drawingContext.shadowBlur = 0;
   pop();
 }

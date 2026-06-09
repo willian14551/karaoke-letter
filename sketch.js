@@ -4,7 +4,7 @@ let estado = "LOADING";
 let fontePixel;
 let dadosMusicas;
 let palavrasBackground = [];
-let textosBg = ["HTML5", "CSS", "JAVASCRIPT", "ARRAY", "CLASS", "WEB", "GAMES", "MINECRAFT", "TERRARIA" ];
+let textosBg = ["HTML5", "CSS", "JAVASCRIPT", "ARRAY", "CLASS", "WEB", "GAMES", "MINECRAFT", "TERRARIA", "JOJO REFERENCE?", "FORTNITE", "P5.JS"];
 let imagensCapas = [];
 
 let musicas = [];
@@ -21,6 +21,9 @@ let nomeJogadorInput = "";
 let abaRankingSelecionada = 0;
 
 let musicaSelecionada = 0;
+
+let ignorarEspaco = false;
+let opcaoSelecionada = 0;
 
 async function preload() {
   fontePixel = await loadFont("assets/fonts/PressStart2P-Regular.ttf");
@@ -105,6 +108,9 @@ function draw() {
       break;
     case "SUCESSO":
       telaSucesso();
+      break;
+    case "OPÇÕES":
+      telaOpcoes();
       break;
   }
 }
@@ -199,16 +205,19 @@ function criarMenu() {
   botoes = [];
 
   botoes.push(
-    new Botao(width / 2, 300, 200, 50, "JOGAR", color(0, 150, 255), color(0, 255, 255)),
+    new Botao(width / 2, 280, 200, 50, "JOGAR", color(0, 150, 255), color(0, 255, 255)),
   );
   botoes.push(
-    new Botao(width / 2, 370, 200, 50, "RANKING", color(200, 150, 0), color(255, 200, 0)),
+    new Botao(width / 2, 350, 200, 50, "RANKING", color(200, 150, 0), color(255, 200, 0)),
   );
   botoes.push(
-    new Botao(width / 2, 440, 200, 50, "SOBRE", color(180), color(255)),
+    new Botao(width / 2, 420, 200, 50, "OPÇÕES", color(0, 200, 150), color(0, 255, 200)),
   );
   botoes.push(
-    new Botao(width / 2, 510, 200, 50, "CRÉDITOS", color(180, 0, 0), color(255, 0, 0)),
+    new Botao(width / 2, 490, 200, 50, "SOBRE", color(180), color(255)),
+  );
+  botoes.push(
+    new Botao(width / 2, 560, 200, 50, "CRÉDITOS", color(180, 0, 0), color(255, 0, 0)),
   );
 }
 
@@ -274,6 +283,9 @@ function keyPressed() {
     return false;
   } else if (estado === "GAME_OVER" || estado === "SUCESSO") {
     fimDeJogoKeyPressed();
+    return false;
+  } else if (estado === "OPÇÕES") {
+    opcoesKeyPressed();
     return false;
   } else {
     if (keyCode === ESCAPE) {
@@ -373,7 +385,6 @@ function carregarRankings() {
     salvos = JSON.parse(localStorage.getItem("karaokeRankings") || "{}");
   } catch (e) {}
 
-  // Se dadosMusicas já carregou, inicializa por música senão usa o que foi salvo
   if (dadosMusicas && dadosMusicas.musicas) {
     rankings = {};
     for (let musica of dadosMusicas.musicas) {
