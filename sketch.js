@@ -4,7 +4,20 @@ let estado = "LOADING";
 let fontePixel;
 let dadosMusicas;
 let palavrasBackground = [];
-let textosBg = ["HTML5", "CSS", "JAVASCRIPT", "ARRAY", "CLASS", "WEB", "GAMES", "MINECRAFT", "TERRARIA", "JOJO REFERENCE?", "FORTNITE", "P5.JS"];
+let textosBg = [
+  "HTML5",
+  "CSS",
+  "JAVASCRIPT",
+  "ARRAY",
+  "CLASS",
+  "WEB",
+  "GAMES",
+  "MINECRAFT",
+  "TERRARIA",
+  "JOJO REFERENCE?",
+  "FORTNITE",
+  "P5.JS",
+];
 let imagensCapas = [];
 
 let musicas = [];
@@ -23,7 +36,7 @@ let abaRankingSelecionada = 0;
 let musicaSelecionada = 0;
 
 let ignorarEspaco = false;
-let opcaoSelecionada = 0;
+let estadoAnterior = "INICIO";
 
 async function preload() {
   fontePixel = await loadFont("assets/fonts/PressStart2P-Regular.ttf");
@@ -80,7 +93,11 @@ function draw() {
 
   switch (estado) {
     case "INICIO":
+      estadoAnterior = "INICIO";
       telaInicial();
+      break;
+    case "OPÇÕES":
+      telaOpcoes();
       break;
     case "JOGAR":
       telaJogar();
@@ -109,8 +126,8 @@ function draw() {
     case "SUCESSO":
       telaSucesso();
       break;
-    case "OPÇÕES":
-      telaOpcoes();
+    case "PAUSE":
+      telaPause();
       break;
   }
 }
@@ -203,21 +220,52 @@ function efetivarMudanca(novoEstado) {
 
 function criarMenu() {
   botoes = [];
-
   botoes.push(
-    new Botao(width / 2, 280, 200, 50, "JOGAR", color(0, 150, 255), color(0, 255, 255)),
+    new Botao(
+      width / 2,
+      280,
+      200,
+      45,
+      "JOGAR",
+      color(0, 150, 255),
+      color(0, 255, 255),
+    ),
   );
   botoes.push(
-    new Botao(width / 2, 350, 200, 50, "RANKING", color(200, 150, 0), color(255, 200, 0)),
+    new Botao(
+      width / 2,
+      340,
+      200,
+      45,
+      "RANKING",
+      color(200, 150, 0),
+      color(255, 200, 0),
+    ),
   );
   botoes.push(
-    new Botao(width / 2, 420, 200, 50, "OPÇÕES", color(0, 200, 150), color(0, 255, 200)),
+    new Botao(
+      width / 2,
+      400,
+      200,
+      45,
+      "OPÇÕES",
+      color(100, 255, 100),
+      color(150, 255, 150),
+    ),
   );
   botoes.push(
-    new Botao(width / 2, 490, 200, 50, "SOBRE", color(180), color(255)),
+    new Botao(width / 2, 460, 200, 45, "SOBRE", color(180), color(255)),
   );
   botoes.push(
-    new Botao(width / 2, 560, 200, 50, "CRÉDITOS", color(180, 0, 0), color(255, 0, 0)),
+    new Botao(
+      width / 2,
+      520,
+      200,
+      45,
+      "CRÉDITOS",
+      color(180, 0, 0),
+      color(255, 0, 0),
+    ),
   );
 }
 
@@ -257,23 +305,44 @@ function keyPressed() {
       tocarSomUI();
       mudarEstado(botoes[selecionado].texto);
     }
+  } else if (estado === "OPÇÕES") {
+    opcoesKeyPressed();
+    return false;
   } else if (estado === "JOGAR") {
-    let total = dadosMusicas.musicas.length;
+    let musicasFiltradas = dadosMusicas.musicas.filter(m => {
+      if (categoriaAtual === "TODAS") return true;
+      return m.nivel === categoriaAtual;
+    });
+    let totalFiltrado = musicasFiltradas.length;
+
     if (keyCode === UP_ARROW) {
-      musicaSelecionada = (musicaSelecionada - 1 + total) % total;
-      tocarSomUI();
+      musicaSelecionada = (musicaSelecionada - 1 + totalFiltrado) % totalFiltrado;
+        tocarSomUI();
     } else if (keyCode === DOWN_ARROW) {
-      musicaSelecionada = (musicaSelecionada + 1) % total;
+      musicaSelecionada = (musicaSelecionada + 1) % totalFiltrado;
       tocarSomUI();
     } else if (keyCode === ENTER) {
       tocarSomUI();
       mudarEstado("GAMEPLAY");
-    } else if (keyCode === ESCAPE) {
+    } else if (key === "q" || key === "Q") {
       tocarSomUI();
       mudarEstado("INICIO");
+    } else if (key === 'f' || key === 'F') {
+      tocarSomUI();
+      mudarCategoria();
     }
   } else if (estado === "GAMEPLAY") {
+    if (keyCode === ENTER) {
+      musicas[musicaSelecionada].pause();
+      estado = "PAUSE";
+      selecionadoPause = 0;
+      tocarSomUI();
+      return false;
+    }
     gameplayKeyPressed();
+    return false;
+  } else if (estado === "PAUSE") {
+    pauseKeyPressed();
     return false;
   } else if (estado === "RANKING") {
     rankingKeyPressed();
@@ -284,14 +353,9 @@ function keyPressed() {
   } else if (estado === "GAME_OVER" || estado === "SUCESSO") {
     fimDeJogoKeyPressed();
     return false;
-  } else if (estado === "OPÇÕES") {
-    opcoesKeyPressed();
-    return false;
-  } else {
-    if (keyCode === ESCAPE) {
-      tocarSomUI();
-      mudarEstado("INICIO");
-    }
+  } else if (key === "q" || key === "Q") {
+    tocarSomUI();
+    mudarEstado("INICIO");
   }
 }
 

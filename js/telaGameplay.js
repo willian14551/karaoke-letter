@@ -274,7 +274,7 @@ function desenharFraseKaraoke(musicaObj) {
 }
 
 function gameplayKeyPressed() {
-  if (keyCode === ESCAPE) {
+  if (key == "q" || key == "Q") {
     musicas[musicaSelecionada].stop();
     mudarEstado("INICIO");
     return;
@@ -286,7 +286,9 @@ function gameplayKeyPressed() {
     let caractere = keyCode === 32 ? " " : key.toUpperCase();
 
     if (fraseAtiva !== null && fraseAtiva.digitado !== fraseAtiva.texto) {
-      let proximoCaractere = fraseAtiva.texto.charAt(fraseAtiva.digitado.length);
+      let proximoCaractere = fraseAtiva.texto.charAt(
+        fraseAtiva.digitado.length,
+      );
 
       if (caractere === proximoCaractere) {
         fraseAtiva.digitado += caractere;
