@@ -1,8 +1,8 @@
-# Karaoke Letter
+# 🎤 Karaoke Letter
 
 **Karaoke Letter** é um jogo rítmico de digitação desenvolvido com **p5.js** e **p5.sound**. O jogador acompanha a música, digita as frases exibidas no tempo certo e tenta alcançar a maior pontuação possível.
 
-## Como jogar
+## 🎮 Como jogar
 
 1. No menu principal, use as setas **cima/baixo** para navegar e **Enter** para selecionar.
 2. Em **Jogar**, escolha uma música da lista.
@@ -12,7 +12,7 @@
 6. Erros, atrasos ou letras não digitadas reduzem a pontuação e quebram o combo.
 7. Ao final, se a pontuação estiver entre as melhores, o jogador pode registrar o nome no ranking local.
 
-## Controles
+## 🕹️ Controles
 
 | Tela | Ação | Tecla |
 | --- | --- | --- |
@@ -32,7 +32,7 @@
 | Opções | Confirmar ou alternar opção | Enter |
 | Opções | Voltar | Q |
 
-## Funcionalidades
+## ✨ Funcionalidades
 
 - Seleção de músicas com capa do álbum.
 - Filtro por dificuldade.
@@ -46,7 +46,7 @@
 - Ranking local salvo no navegador com `localStorage`.
 - Telas de sucesso, game over, sobre e créditos.
 
-## Como executar
+## 🚀 Como executar
 
 Por usar carregamento de arquivos JSON, áudio e imagens, o ideal é executar o projeto em um servidor local.
 
@@ -62,7 +62,7 @@ Depois, acesse:
 http://localhost:8000
 ```
 
-## Estrutura do projeto
+## 📁 Estrutura do projeto
 
 ```text
 karaoke-letter/
@@ -92,7 +92,7 @@ karaoke-letter/
 └── sketch.js
 ```
 
-## Principais arquivos
+## 🧩 Principais arquivos
 
 - `index.html`: carrega as bibliotecas e telas do jogo.
 - `sketch.js`: controla o estado global, carregamento de assets, menus, transições e loop principal.
@@ -103,7 +103,7 @@ karaoke-letter/
 - `js/telaPause.js`: gerencia o menu de pausa.
 - `js/telaRanking.js`: salva e exibe recordes por música.
 
-## Tecnologias utilizadas
+## 🛠️ Tecnologias utilizadas
 
 - **HTML5**
 - **CSS3**
@@ -113,18 +113,18 @@ karaoke-letter/
 - **LocalStorage**
 - **JSON**
 
-## Músicas cadastradas
+## 🎵 Músicas cadastradas
 
 - **What A Wonderful World** - Louis Armstrong
 - **Até que Durou** - Péricles
 - **Comfortably Numb** - Pink Floyd
 - **Notion** - The Rare Occasions
 
-## Desenvolvimento
+## 🎓 Desenvolvimento
 
 Projeto desenvolvido como trabalho acadêmico da disciplina **Web Development: HTML5 Canvas & Games**, do curso de Bacharelado em Sistemas de Informação da **Pontifícia Universidade Católica do Paraná (PUCPR)**.
 
-## Integrantes
+## 👥 Integrantes
 
 - [Kamilly](https://github.com/PKamilly)
 - [Sérgio](https://github.com/sergiocalazans)
