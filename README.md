@@ -2,6 +2,10 @@
 
 **Karaoke Letter** é um jogo rítmico de digitação desenvolvido com **p5.js** e **p5.sound**. O jogador acompanha a música, digita as frases exibidas no tempo certo e tenta alcançar a maior pontuação possível.
 
+## 📽️ Vídeo do projeto
+
+[Link do vídeo](https://youtu.be/838RIkkjLVk)
+
 ## 🎮 Como jogar
 
 1. No menu principal, use as setas **cima/baixo** para navegar e **Enter** para selecionar.
